@@ -11,10 +11,14 @@ import {
 
 @Entity()
 export class SupportTeam {
+  constructor(name: string) {
+    this.name = name;
+  }
+
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   name: string;
 
   @CreateDateColumn()

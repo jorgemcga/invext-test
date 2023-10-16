@@ -1,1 +1,3 @@
-export class CreateSupportTeamDto {}
+export class CreateSupportTeamDto {
+  name: string;
+}

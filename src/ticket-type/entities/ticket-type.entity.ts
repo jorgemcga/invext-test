@@ -13,6 +13,11 @@ import {
 
 @Entity()
 export class TicketType {
+  constructor(name: string, supportTeamId: number) {
+    this.name = name;
+    this.supportTeamId = supportTeamId;
+  }
+
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -28,6 +33,9 @@ export class TicketType {
   @ManyToOne(() => SupportTeam)
   @JoinColumn({ name: 'supportTeamId' })
   supportTeam: SupportTeam;
+
+  @Column()
+  supportTeamId: number;
 
   @OneToMany(() => Ticket, (ticket) => ticket.ticketType)
   tickets: Ticket[];

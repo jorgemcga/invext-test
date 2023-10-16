@@ -1,8 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TicketController } from './ticket/ticket.controller';
-import { TicketService } from './ticket/ticket.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SupportModule } from './support/support.module';
 import { TicketModule } from './ticket/ticket.module';
@@ -26,7 +22,5 @@ import { SupportTeam } from './support-team/entities/support-team.entity';
     SupportTeamModule,
     TicketTypeModule,
   ],
-  controllers: [AppController, TicketController],
-  providers: [AppService, TicketService],
 })
 export class AppModule {}
