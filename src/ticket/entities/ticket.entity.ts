@@ -21,15 +21,15 @@ export class Ticket {
   constructor(
     description: string,
     status: string,
-    supportId: number,
     ticketTypeId: number,
-    assigned_at: Date | null,
-    closed_at: Date | null,
+    supportId?: number,
+    assigned_at?: Date,
+    closed_at?: Date,
   ) {
     this.description = description;
     this.status = status;
-    this.supportId = supportId;
     this.ticketTypeId = ticketTypeId;
+    this.supportId = supportId;
     this.assigned_at = assigned_at;
     this.closed_at = closed_at;
   }

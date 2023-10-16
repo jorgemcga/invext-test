@@ -10,7 +10,9 @@ import {
 import { SupportTeamService } from './support-team.service';
 import { CreateSupportTeamDto } from './dto/create-support-team.dto';
 import { UpdateSupportTeamDto } from './dto/update-support-team.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Support Team')
 @Controller('support-team')
 export class SupportTeamController {
   constructor(private readonly _service: SupportTeamService) {}
@@ -26,7 +28,7 @@ export class SupportTeamController {
     } catch (error) {
       return {
         success: false,
-        message: 'Error on create ticket',
+        message: 'Error on create support team',
         error: error.message,
       };
     }

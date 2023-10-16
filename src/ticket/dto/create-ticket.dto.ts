@@ -1,4 +1,8 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class CreateTicketDto {
+  @ApiProperty()
   description: string;
-  status: string;
+  @ApiProperty()
+  ticketTypeId: number;
 }

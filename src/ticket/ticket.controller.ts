@@ -10,73 +10,120 @@ import {
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { AssignTicketDto } from './dto/assing-ticket.dto';
 
+@ApiTags('Ticket')
 @Controller('ticket')
 export class TicketController {
-  constructor(private readonly ticketService: TicketService) {}
-
-  @Post()
-  async create(@Body() createTicketDto: CreateTicketDto) {
-    try {
-      // Valide os dados usando o DTO e a lógica de validação definida no DTO.
-      const newTicket = await this.ticketService.create(createTicketDto);
-      return this.ticketService.create(createTicketDto);
-
-      // Se a criação for bem-sucedida, retorne o ticket criado e um status HTTP 201 (Created).
-      return {
-        message: 'Ticket criado com sucesso',
-        ticket: newTicket,
-      };
-    } catch (error) {
-      // Se ocorrer um erro na criação, retorne um status HTTP 400 (Bad Request) e uma mensagem de erro.
-      return {
-        message: 'Falha na criação do ticket',
-        error: error.message, // Você pode personalizar a mensagem de erro conforme necessário.
-      };
-    }
-  }
+  constructor(private readonly _service: TicketService) {}
 
   // TODO: Criar lógica
   @Post(':id/assign')
-  assignTicket(@Body() createTicketDto: CreateTicketDto) {
-    return this.ticketService.create(createTicketDto);
+  assignTicket(@Param('id') id: string, @Body() request: AssignTicketDto) {
+    return this._service.assingTicket(+id, request.supportId);
   }
 
   // TODO: Criar lógica
   @Post(':id/close')
-  closeTicket(@Body() createTicketDto: CreateTicketDto) {
-    return this.ticketService.create(createTicketDto);
+  closeTicket(@Param('id') id: string) {
+    return this._service.closeTicket(+id);
   }
 
   // TODO: Criar lógica
-  @Get('/mine')
-  getMyTickets(@Param('supportId') supportId: number) {
-    return this.ticketService.findAll();
+  @Get('/attend/:supportId')
+  findMyAttendTickets(@Param() supportId: number) {
+    return this._service.findMyAttendTickets(+supportId);
   }
 
   // TODO: Criar lógica
-  @Get('/peding')
-  getPending(@Param('supportId') supportId: number) {
-    return this.ticketService.findAll();
+  @Get('/peding/:supportTeamId')
+  getPending(@Param() supportTeamId: number) {
+    return this._service.findPedingForTeam(supportTeamId);
+  }
+
+  @Post()
+  async create(@Body() request: CreateTicketDto) {
+    try {
+      const entity = await this._service.create(request);
+      return {
+        succes: true,
+        data: entity,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error on create ticket',
+        error: error.message,
+      };
+    }
   }
 
   @Get()
-  findAll() {
-    return this.ticketService.findAll();
+  async findAll() {
+    try {
+      const list = await this._service.findAll();
+      return {
+        succes: true,
+        data: list,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error on get tickets',
+        error: error.message,
+      };
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ticketService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    try {
+      const entity = await this._service.findOne(+id);
+      return {
+        succes: true,
+        data: entity,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Ticket not found',
+        error: error.message,
+      };
+    }
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto) {
-    return this.ticketService.update(+id, updateTicketDto);
+  async update(@Param('id') id: string, @Body() request: UpdateTicketDto) {
+    try {
+      const entity = await this._service.update(+id, request);
+      return {
+        succes: true,
+        data: entity,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error on update ticket',
+        error: error.message,
+      };
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ticketService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      const entity = await this._service.remove(+id);
+      return {
+        succes: true,
+        data: entity,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error on delete ticket',
+        error: error.message,
+      };
+    }
   }
 }

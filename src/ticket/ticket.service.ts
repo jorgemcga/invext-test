@@ -1,33 +1,118 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
-import { Ticket } from './entities/ticket.entity';
+import { ITicketStatus, Ticket } from './entities/ticket.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { SupportService } from 'src/support/support.service';
+import { SupportTeamService } from 'src/support-team/support-team.service';
 
 @Injectable()
 export class TicketService {
-  async create(createTicketDto: CreateTicketDto) {
-    // Crie uma nova instância de Ticket com base nos dados do DTO.
-    // const newTicket = new Ticket();
-    // Salve o novo ticket no banco de dados.
-    return true;
-    //  this.ticketRepository.save(
-    // new Ticket(createTicketDto.description, createTicketDto.status),
-    // );
+  constructor(
+    @InjectRepository(Ticket)
+    private readonly _repository: Repository<Ticket>,
+    private readonly _supportService: SupportService,
+    private readonly _supportTeamService: SupportTeamService,
+  ) {}
+
+  // Custom methods
+  async assingTicket(id: number, supportId: number) {
+    const ticket = await this.findOne(id);
+    const support = await this._supportService.findOne(supportId);
+
+    if (support.supportTeamId !== ticket.ticketType.supportTeamId) {
+      throw new Error("Support Team don't match with ticket type");
+    }
+
+    ticket.status = ITicketStatus.in_progress;
+    ticket.supportId = support.id;
+
+    return this._repository.save(ticket);
   }
 
-  async findAll() {
-    return `This action returns all ticket`;
+  async closeTicket(id: number) {
+    const ticket = await this.findOne(id);
+    ticket.status = ITicketStatus.closed;
+    ticket.closed_at = new Date();
+    return this._repository.save(ticket);
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} ticket`;
+  async findMyAttendTickets(supportId: number) {
+    const support = await this._supportService.findOne(supportId);
+    const list = await this._repository.find({
+      where: {
+        supportId: support.id,
+        status: ITicketStatus.in_progress,
+      },
+    });
+    return list;
   }
 
-  async update(id: number, updateTicketDto: UpdateTicketDto) {
-    return `This action updates a #${id} ticket`;
+  async findPedingForTeam(supportTeamId: number) {
+    const supportTeam = await this._supportTeamService.findOne(supportTeamId);
+    const list = await this._repository.find({
+      where: {
+        ticketType: [...supportTeam.ticketTypes],
+        status: ITicketStatus.open,
+      },
+    });
+    return list;
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} ticket`;
+  // Default CRUD opertaions
+  async create(request: CreateTicketDto): Promise<Ticket> {
+    const newTicket = new Ticket(
+      request.description,
+      ITicketStatus.open,
+      request.ticketTypeId,
+    );
+    return this._repository.save(newTicket);
+  }
+
+  async findAll(): Promise<Ticket[]> {
+    return this._repository.find();
+  }
+
+  async findOne(id: number): Promise<Ticket> {
+    const entity = await this._repository.findOne({
+      where: { id },
+    });
+
+    if (!entity) {
+      throw new Error('Ticket not found');
+    }
+
+    return entity;
+  }
+
+  async update(id: number, request: UpdateTicketDto): Promise<Ticket> {
+    const entity = await this._repository.findOne({
+      where: { id },
+    });
+
+    if (!entity) {
+      throw new Error('Ticket not found');
+    }
+
+    for (const key in request) {
+      if (request[key]) {
+        entity[key] = request[key];
+      }
+    }
+
+    return this._repository.save(entity);
+  }
+
+  async remove(id: number): Promise<Ticket> {
+    const entity = await this._repository.findOne({
+      where: { id },
+    });
+
+    if (!entity) {
+      throw new Error('Ticket not found');
+    }
+
+    return await this._repository.remove(entity);
   }
 }

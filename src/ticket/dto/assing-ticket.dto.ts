@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateTicketDto {
+export class AssignTicketDto {
   @ApiProperty()
-  description: string;
+  supportId: number;
 }
