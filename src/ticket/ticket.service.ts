@@ -90,7 +90,7 @@ export class TicketService {
   async findOne(id: number): Promise<Ticket> {
     const entity = await this._repository.findOne({
       where: { id },
-      relations: ['ticketType']
+      relations: ['ticketType'],
     });
 
     if (!entity) {
