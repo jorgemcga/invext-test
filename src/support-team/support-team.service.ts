@@ -24,6 +24,7 @@ export class SupportTeamService {
   async findOne(id: number): Promise<SupportTeam> {
     const entity = await this._repository.findOne({
       where: { id },
+      relations: ['ticketTypes'],
     });
 
     if (!entity) {

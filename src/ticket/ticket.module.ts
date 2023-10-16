@@ -7,10 +7,12 @@ import { SupportService } from 'src/support/support.service';
 import { SupportTeamService } from 'src/support-team/support-team.service';
 import { SupportTeam } from 'src/support-team/entities/support-team.entity';
 import { Support } from 'src/support/entities/support.entity';
+import { TicketType } from 'src/ticket-type/entities/ticket-type.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Ticket]),
+    TypeOrmModule.forFeature([TicketType]),
     TypeOrmModule.forFeature([Support]),
     TypeOrmModule.forFeature([SupportTeam]),
   ],

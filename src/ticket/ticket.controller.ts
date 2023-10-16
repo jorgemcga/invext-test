@@ -32,13 +32,13 @@ export class TicketController {
 
   // TODO: Criar lógica
   @Get('/attend/:supportId')
-  findMyAttendTickets(@Param() supportId: number) {
+  findMyAttendTickets(@Param('supportId') supportId: number) {
     return this._service.findMyAttendTickets(+supportId);
   }
 
   // TODO: Criar lógica
   @Get('/peding/:supportTeamId')
-  getPending(@Param() supportTeamId: number) {
+  getPending(@Param('supportTeamId') supportTeamId: number) {
     return this._service.findPedingForTeam(supportTeamId);
   }
 

@@ -43,10 +43,10 @@ export class Ticket {
   @Column()
   status: string;
 
-  @Column()
+  @Column({ nullable: true })
   closed_at: Date;
 
-  @Column()
+  @Column({ nullable: true })
   assigned_at: Date;
 
   @CreateDateColumn()
@@ -59,7 +59,7 @@ export class Ticket {
   @JoinColumn({ name: 'supportId' })
   support: Support;
 
-  @Column()
+  @Column({ nullable: true })
   supportId: number;
 
   @ManyToOne(() => TicketType)

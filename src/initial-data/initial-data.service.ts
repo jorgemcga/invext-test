@@ -1,12 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SupportTeam } from 'src/support-team/entities/support-team.entity';
 import { Support } from 'src/support/entities/support.entity';
 import { TicketType } from 'src/ticket-type/entities/ticket-type.entity';
 import { ITicketStatus, Ticket } from 'src/ticket/entities/ticket.entity';
-import { MigrationInterface, QueryRunner, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
-export class CreateInitialData1697467583250 implements MigrationInterface {
+@Injectable()
+export class InitialDataService {
   constructor(
     @InjectRepository(Ticket)
     private readonly ticketRepository: Repository<Ticket>,
@@ -18,7 +19,7 @@ export class CreateInitialData1697467583250 implements MigrationInterface {
     private readonly supportTeamRepository: Repository<SupportTeam>,
   ) {}
 
-  public async up(_queryRunner: QueryRunner): Promise<void> {
+  async loadInitialData() {
     await this._createSupportTeams();
     await this._createSupport();
     await this._createTicketTypes();
@@ -81,10 +82,10 @@ export class CreateInitialData1697467583250 implements MigrationInterface {
         new Date(),
         null,
       ),
+      new Ticket('Mais um problema com cartão', ITicketStatus.open, 1),
+      new Ticket('Mais um sobre empréstimo', ITicketStatus.open, 2),
     ];
 
     await this.ticketRepository.save(exampleTickets);
   }
-
-  public async down(_queryRunner: QueryRunner): Promise<void> {}
 }

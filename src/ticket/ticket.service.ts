@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { ITicketStatus, Ticket } from './entities/ticket.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SupportService } from 'src/support/support.service';
 import { SupportTeamService } from 'src/support-team/support-team.service';
@@ -23,6 +23,12 @@ export class TicketService {
 
     if (support.supportTeamId !== ticket.ticketType.supportTeamId) {
       throw new Error("Support Team don't match with ticket type");
+    }
+
+    const supportAttendingTicket = await this.findMyAttendTickets(supportId);
+
+    if (supportAttendingTicket.length >= 3) {
+      throw new Error('Support not able to get more tickets');
     }
 
     ticket.status = ITicketStatus.in_progress;
@@ -51,9 +57,13 @@ export class TicketService {
 
   async findPedingForTeam(supportTeamId: number) {
     const supportTeam = await this._supportTeamService.findOne(supportTeamId);
+    if (!supportTeam.ticketTypes) {
+      throw 'Support team without ticket type setup';
+    }
+
     const list = await this._repository.find({
       where: {
-        ticketType: [...supportTeam.ticketTypes],
+        ticketTypeId: In(supportTeam.ticketTypes.map((tt) => tt.id)),
         status: ITicketStatus.open,
       },
     });
