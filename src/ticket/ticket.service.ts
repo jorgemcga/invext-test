@@ -21,6 +21,9 @@ export class TicketService {
     const ticket = await this.findOne(id);
     const support = await this._supportService.findOne(supportId);
 
+    if (ticket.status !== ITicketStatus.open) {
+      throw new Error('Ticket already assigned');
+    }
     if (support.supportTeamId !== ticket.ticketType.supportTeamId) {
       throw new Error("Support Team don't match with ticket type");
     }
@@ -87,6 +90,7 @@ export class TicketService {
   async findOne(id: number): Promise<Ticket> {
     const entity = await this._repository.findOne({
       where: { id },
+      relations: ['ticketType']
     });
 
     if (!entity) {

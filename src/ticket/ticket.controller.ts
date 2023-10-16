@@ -20,26 +20,77 @@ export class TicketController {
 
   // TODO: Criar lógica
   @Post(':id/assign')
-  assignTicket(@Param('id') id: string, @Body() request: AssignTicketDto) {
-    return this._service.assingTicket(+id, request.supportId);
+  async assignTicket(
+    @Param('id') id: string,
+    @Body() request: AssignTicketDto,
+  ) {
+    try {
+      const result = await this._service.assingTicket(+id, request.supportId);
+      return {
+        succes: true,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error on assign ticket',
+        error: error.message,
+      };
+    }
   }
 
   // TODO: Criar lógica
   @Post(':id/close')
-  closeTicket(@Param('id') id: string) {
-    return this._service.closeTicket(+id);
+  async closeTicket(@Param('id') id: string) {
+    try {
+      const result = await this._service.closeTicket(+id);
+      return {
+        succes: true,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error on close ticket',
+        error: error.message,
+      };
+    }
   }
 
   // TODO: Criar lógica
   @Get('/attend/:supportId')
-  findMyAttendTickets(@Param('supportId') supportId: number) {
-    return this._service.findMyAttendTickets(+supportId);
+  async findMyAttendTickets(@Param('supportId') supportId: number) {
+    try {
+      const list = await this._service.findMyAttendTickets(+supportId);
+      return {
+        succes: true,
+        data: list,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error on get ticket list',
+        error: error.message,
+      };
+    }
   }
 
   // TODO: Criar lógica
   @Get('/peding/:supportTeamId')
-  getPending(@Param('supportTeamId') supportTeamId: number) {
-    return this._service.findPedingForTeam(supportTeamId);
+  async getPending(@Param('supportTeamId') supportTeamId: number) {
+    try {
+      const list = await this._service.findPedingForTeam(supportTeamId);
+      return {
+        succes: true,
+        data: list,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error on get ticket list',
+        error: error.message,
+      };
+    }
   }
 
   @Post()
